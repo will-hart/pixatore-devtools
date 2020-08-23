@@ -24,6 +24,7 @@ chrome.runtime.onConnect.addListener(function (port) {
     // The original connection event doesn't include the tab ID of the
     // DevTools page, so we need to send it explicitly.
     if (message.name == "init") {
+      log(`Adding connected tab for tab ID ${message.tabId}`)
       connections[message.tabId] = port;
       return;
     }

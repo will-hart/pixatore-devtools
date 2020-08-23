@@ -26,13 +26,13 @@ if (!window.__PIXATORE_DEVTOOLS_INJECTED) {
 
       constructor() {
         window.__PIXATORE_DEVTOOLS.eventBus.subscribe('*', (event) => {
-          log('Received event')
+          // log('Received event')
           sendMessage('eventBusEvent', event)
         })
       }
 
       execute(deltaT, _world) {
-        log('Updating world', deltaT)
+        // log('Updating world', deltaT)
         sendMessage('refreshData', deltaT);
       }
     }
@@ -44,12 +44,12 @@ if (!window.__PIXATORE_DEVTOOLS_INJECTED) {
   function log() {
     var args = Array.from(arguments);
     args.unshift('background: #9999ff; color: #ffffff;');
-    args.unshift(`%c Pixatore Injector `);
+    args.unshift(`%c Pixatore Devtools `);
 
     console.log.apply(console, args);
   }
 
-  // log( 'ECSYInspector injected', document.location.href );
+  log('PixatoreInspector injected', document.location.href);
 
   window.__PIXATORE_DEVTOOLS_INJECTED = true;
 }
