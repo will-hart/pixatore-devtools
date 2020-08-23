@@ -4,4 +4,4 @@
 
 This extension allows inspecting Pixatore ECS and EventBus events. Unlike ecsy-devtools, performance is not optimal!
 
-![screenshot](https://raw.githubusercontent.com/will-hart/pixatore-devtools/master/assets/readme/screenshot.png)
+![screenshot](https://raw.githubusercontent.com/will-hart/pixatore-devtools/stable/assets/readme/screenshot.png)
