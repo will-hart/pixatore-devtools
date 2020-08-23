@@ -22,8 +22,11 @@ header {
 main {
   display: flex;
   flex-direction: row;
+  justify-content: stretch;
+
   width: 100vw;
-  height: calc(100vh - 50px);
+  min-height: calc(100vh - 50px);
+
   overflow-y: auto;
   overflow-x: hidden;
 }

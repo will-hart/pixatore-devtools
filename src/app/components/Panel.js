@@ -34,7 +34,7 @@ export class Panel extends Component {
         if (m.method === 'refreshData') {
           this.processData(m.data);
         } else if (m.method === 'disabled') {
-          this.setState({ data: null });
+          this.setState({ events: [], world: null, fps: [] });
         } else if (m.method === 'eventBusEvent') {
           this.processEventBusEvent(m.data)
         }
@@ -100,11 +100,14 @@ export class Panel extends Component {
         <main>
           <div id="state">
             <h3>State</h3>
-            <JSONTree json={world} />
+            <JSONTree data={world} />
           </div>
           <div id="events">
             <h3>Events</h3>
             <p>Storing {events.length} events</p>
+            <ul>
+              {events.map((evt, idx) => (<li key={`evt_${idx}`}>{evt.type}</li>))}
+            </ul>
           </div>
         </main>
       </div>

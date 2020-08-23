@@ -26,13 +26,13 @@ if (!window.__PIXATORE_DEVTOOLS_INJECTED) {
 
       constructor() {
         window.__PIXATORE_DEVTOOLS.eventBus.subscribe('*', (event) => {
-          // log('Received event')
+          // log('Received event', event.type)
           sendMessage('eventBusEvent', event)
         })
       }
 
       execute(deltaT, world) {
-        log('Updating world', world)
+        // log('Updating world', JSON.stringify(world.entities))
         sendMessage('refreshData', { deltaT, world: JSON.stringify(world.entities) });
       }
     }
