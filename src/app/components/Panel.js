@@ -17,7 +17,8 @@ export class Panel extends Component {
     this.state = {
       events: [],
       world: null,
-      fps: []
+      fps: [],
+      entityCounts: []
     };
 
     if (globalBrowser && globalBrowser.devtools) {
@@ -56,24 +57,30 @@ export class Panel extends Component {
 
   processData(data) {
     const FPS_SMOOTHING = 30
+    const HISTORY_LENGTH = 25
+
     this.fpsTotal += 1000 / data.deltaT
     this.fpsUpdateCounter++
+    const world = JSON.parse(data.world)
 
     if (this.fpsUpdateCounter > FPS_SMOOTHING) {
       let fps = [...this.state.fps, Math.floor(this.fpsTotal / FPS_SMOOTHING)]
-      fps = fps.slice(Math.max(0, fps.length - FPS_SMOOTHING))
+      fps = fps.slice(Math.max(0, fps.length - HISTORY_LENGTH))
+
+      let entityCounts = [...this.state.entityCounts, world.length]
+      entityCounts = entityCounts.slice(Math.max(0, entityCounts.length - HISTORY_LENGTH))
 
       this.fpsUpdateCounter = 0
       this.fpsTotal = 0
 
-      this.setState({ fps, world: JSON.parse(data.world) })
+      this.setState({ fps, entityCounts, world })
     } else {
-      this.setState({ world: JSON.parse(data.world) })
+      this.setState({ world })
     }
   }
 
   render() {
-    const { events, fps, world } = this.state;
+    const { events, entityCounts, fps, world } = this.state;
 
     if (!events && !world) {
       return (
@@ -89,7 +96,19 @@ export class Panel extends Component {
             <span className="stat-label">FPS</span>
           </div>
           <div className="thin-sparkline">
-            {fps.length < 20 ? <FiActivity /> : <Sparklines data={fps} limit={20} width="150" height="40" min={0} max={150}>
+            {fps.length < 20 ? <FiActivity /> : <Sparklines data={fps} width="150" height="40" min={0} max={150}>
+              <SparklinesLine color="#1c8cdc" />
+              <SparklinesSpots />
+              <SparklinesReferenceLine type="mean" />
+            </Sparklines>}
+          </div>
+
+          <div className="stat">
+            <span className="stat-value">{entityCounts[entityCounts.length - 1] || '?'}</span>
+            <span className="stat-label">ENTS</span>
+          </div>
+          <div className="thin-sparkline">
+            {entityCounts.length < 20 ? <FiActivity /> : <Sparklines data={entityCounts} width="150" height="40" min={0}>
               <SparklinesLine color="#1c8cdc" />
               <SparklinesSpots />
               <SparklinesReferenceLine type="mean" />
