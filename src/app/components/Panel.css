@@ -10,13 +10,50 @@ header {
   margin-bottom: 10px;
   background: #1E1E1E;
   padding: 10px 15px;
-  width: calc(100% - 50px);
-  display: flex;
+  width: 100vw;
   color: #AAA;
-  justify-content: space-between;
+  border-left: 4px solid #a22;
+  box-sizing: border-box;
+
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
 }
 
 main {
   display: flex;
   flex-direction: row;
+  width: 100vw;
+}
+
+main #state, main #events {
+  width: 48vw;
+  padding: 1vw;
+}
+
+main #events {
+  background: #353535;
+  border-left: 1px solid #1E1E1E;
+}
+
+.thin-sparkline {
+  width: 150px;
+  height: 30px;
+  display: inline-block;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  margin-right: 1em;
+}
+
+.stat > .stat-value {
+  text-transform: uppercase;
+  font-size: 1.3em;
+}
+
+.stat > .stat-label {
+  font-weight: bold;
+  font-size: 0.9em;
 }

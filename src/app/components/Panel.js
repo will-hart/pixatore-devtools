@@ -1,17 +1,22 @@
 import React, { Component } from 'react';
+import JSONTree from 'react-json-tree'
+import { Sparklines, SparklinesLine, SparklinesSpots, SparklinesReferenceLine } from 'react-sparklines'
+
 import "./Panel.css"
 
 var globalBrowser = typeof chrome !== 'undefined' ? chrome : typeof browser !== 'undefined' ? browser : null;
 
 export class Panel extends Component {
+  fpsUpdateCounter = 0
+  fptTotal = 0
+
   constructor() {
     super();
 
     this.state = {
-      data: {},
-      lastFps: 0,
-      fpsSmoothed: 0,
-      events: []
+      events: [],
+      world: null,
+      fps: []
     };
 
     if (globalBrowser && globalBrowser.devtools) {
@@ -42,34 +47,34 @@ export class Panel extends Component {
 
   processEventBusEvent(data) {
     const { events } = this.state
+    const MAX_EVENTS = 20
+    const newEvents = [...(events.length === MAX_EVENTS ? events.slice(1) : events), data]
 
-    events.push(data)
-    this.setState({ events: events.slice(events.length - 20) })
+    this.setState({ events: newEvents })
   }
 
   processData(data) {
-    const lastFps = 1000 / data
+    const FPS_SMOOTHING = 30
+    this.fpsTotal += 1000 / data.deltaT
+    this.fpsUpdateCounter++
 
-    // use EMA to smooth over 60ps, smoothing rate K
-    const K = 2 / 5
-    const nextFps = Math.floor(lastFps * K + this.state.fpsSmoothed * (1 - K))
+    if (this.fpsUpdateCounter > FPS_SMOOTHING) {
+      let fps = [...this.state.fps, this.fpsTotal / FPS_SMOOTHING]
+      fps = fps.slice(fps.length - FPS_SMOOTHING)
 
-    this.setState({ fpsSmoothed: nextFps, lastFps: Math.floor(lastFps) })
+      this.fpsUpdateCounter = 0
+      this.fpsTotal = 0
+
+      this.setState({ fps, world: JSON.parse(data.world) })
+    } else {
+      this.setState({ world: JSON.parse(data.world) })
+    }
   }
 
   render() {
-    const { data, events, fpsSmoothed, lastFps } = this.state;
+    const { events, fps, world } = this.state;
 
-    if (!data && this.state.remoteConnection) {
-      return (
-        <div style={{ backgroundColor: '#AAA' }}>
-          <h1>Remote connection done!</h1>
-          <h2>{this.state.remoteConnectionMessage}</h2>
-        </div>
-      );
-    }
-
-    if (!data) {
+    if (!events && !world) {
       return (
         <p>Pixatore not detected</p>
       );
@@ -78,15 +83,28 @@ export class Panel extends Component {
     return (
       <div class="wrapper">
         <header>
-          Executing at {lastFps}fps, recent average {fpsSmoothed}fps
-      </header>
+          <div className="stat">
+            <span className="stat-value">{Math.floor(fps[fps.length - 1] || 0)}</span>
+            <span className="stat-label">FPS</span>
+          </div>
+          <div className="thin-sparkline">
+            <Sparklines data={fps} limit={20} width="150" height="40">
+              <SparklinesLine color="#1c8cdc" />
+              <SparklinesSpots />
+              <SparklinesReferenceLine type="mean" />
+            </Sparklines>
+          </div>
+        </header>
+
         <main>
           <div id="state">
-            State
-        </div>
+            <h3>State</h3>
+            <JSONTree json={world} />
+          </div>
           <div id="events">
-            Events
-        </div>
+            <h3>Events</h3>
+            <p>Storing {events.length} events</p>
+          </div>
         </main>
       </div>
     );

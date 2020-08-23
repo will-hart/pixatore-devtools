@@ -31,9 +31,9 @@ if (!window.__PIXATORE_DEVTOOLS_INJECTED) {
         })
       }
 
-      execute(deltaT, _world) {
-        // log('Updating world', deltaT)
-        sendMessage('refreshData', deltaT);
+      execute(deltaT, world) {
+        log('Updating world', world)
+        sendMessage('refreshData', { deltaT, world: JSON.stringify(world.entities) });
       }
     }
 
